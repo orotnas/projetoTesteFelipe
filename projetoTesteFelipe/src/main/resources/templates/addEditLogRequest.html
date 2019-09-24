@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+	<head>
+		<meta charset="UTF-8">
+    	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    	
+		<title>Cadastro Log Request</title>
+		
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		<script src="jquery.input-ip-address-control-1.0.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	</head>
+	
+	<body>
+		<div class="panel panel-default">
+			<div class="panel-heading" style="margin-left: 10px !important; margin-right: 10px !important;">
+				<strong>Cadastro de Log Request</strong>
+			</div>
+			
+			<div class="panel-body">
+				<form class="form-horizontal" th:object="${log}" th:action="@{/createLog}" method="POST" style="margin: 10px">
+					<div class="form-group" style="width: 98% !important; margin-left: 10px !important; margin-right: 10px !important;">
+						<fieldset>
+						
+							<input type="hidden" id="id" th:field="*{seq}">
+							
+							<div class="form-group row">
+								<div class="col-md-2" >
+									<label>Data</label> 
+									<input id="data" type="date" required="required" class="form-control input-sm" th:field="*{data}" autofocus="autofocus"/>
+								</div>
+							</div>			
+							<div class="form-group row">                                                          
+								<div class="col-md-4">
+								    <label>IP</label>
+								    <input id="ipv4" type="text" required="required" class="form-control input-sm" th:field="*{ip}" 
+								    	onBlur="validateIP(ipv4)" placeholder="Informe o ip" maxlength="15"/>
+								</div>
+							</div>
+							<div class="form-group row">
+								<div class="col-md-4" >
+									<label>Request</label> 
+									<input id="request" type="text" required="required" class="form-control input-sm" th:field="*{request}" maxlength="200" placeholder="Informe o request"/>
+								</div>
+							</div>
+							
+							<div class="form-group row">
+								<div class="col-md-4" >
+									<label>Status</label> 
+									<input id="status" required="required" class="form-control input-sm" th:field="*{status}" maxlength="3" 
+										onBlur="validarStatus(status)" placeholder="Informe o status"/>
+								</div>
+							</div>
+											
+							<div class="form-group row">
+								<div class="col-md-4" >
+									<label>User Agent</label>
+									<textarea id="user" class="form-control input-sm" th:field="*{userAgent}" cols="3" rows="6" placeholder="Informe o user agent"></textarea>
+								</div>
+							</div>	
+						
+						</fieldset>
+					</div>
+					
+					<div class="form-group row" style="margin-left: 10px !important; margin-right: 10px !important;">
+						<button type="submit" class="btn btn-sm btn-primary">Salvar</button>
+						<a th:href="@{/prevent}" class="btn btn-sm btn-default">Cancelar</a>
+					</div>
+				</form>
+			</div>
+			
+			<div style="margin-left: 10px !important; margin-right: 10px !important;">
+				<form class="form-horizontal" th:object="${file}"  method="POST" th:action="@{/uploadFile}" enctype="multipart/form-data">
+				   	<input type="file" name="file"/><br/><br/>
+				    <input type="submit" value="Enviar" class="btn btn-sm btn-primary"/>
+				</form>
+			</div>
+		</div>	
+		
+		<script type="text/javascript">
+			function validateIP(id) {
+	        	var RegExPattern = /^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/;
+
+	        	if((!(id.value.match(RegExPattern)) && (id.value!="")) || id.value=='0.0.0.0' || id.value=='255.255.255.255') {
+	           		alert('Formato de IP inválido - ex: 0.0.0.0 ou 255.255.255.255.');
+	           		id.value = "";
+	        	}
+			}
+			
+			function validarStatus(id){
+				var RegExPatter = /[^0-9]/;
+				if(id.value.match(RegExPatter)){
+					alert('Digite apenas numeros: ex: 200.');
+					id.value = "";
+				}
+			}
+		</script>
+	</body>
+</html>

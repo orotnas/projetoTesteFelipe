@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+	<head>
+		<meta charset="UTF-8">
+    	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    	
+		<title>Logs Request</title>
+		
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	</head>
+	
+	<body>
+		<div class="panel panel-default">
+			<div class="panel-heading" style="margin-left: 10px !important; margin-right: 10px !important;">
+				<strong>Logs Request</strong>
+			</div>
+			
+			<div class="panel-body">
+				<form class="form-horizontal" th:object="${filtro}" method="POST" th:action="@{/buscar}" onsubmit="return checkData(this)">
+					<div class="form-group" style="width: 98% !important; margin-left: 10px !important; margin-right: 10px !important;">
+						<div class="form-group row">
+								<div class="col-md-2" >
+									<label>Data Inicial</label> 
+									<input id="dataIni" type="text" class="form-control input-sm" placeholder="DD/MM/AAAA" th:field="*{dtInicial}" 
+										onblur="validaData(dataIni)" maxlength="10"/>
+								</div>
+
+								<div class="col-md-2" >
+									<label>Data Final</label> 
+									<input id="dataFim" type="text" class="form-control input-sm" placeholder="DD/MM/AAAA" th:field="*{dtFinal}"
+										onblur="validaData(dataFim)" maxlength="10"/>
+								</div>
+
+								<div class="col-md-4">
+								    <label>IP</label>
+								    <input id="ipv4" type="text" class="form-control input-sm" th:field="*{ip}" placeholder="Pesquisar por Ip" maxlength="12"/>
+								</div>
+
+								<div class="col-md-4" >
+									<label>Request</label> 
+									<input id="request" type="text" class="form-control input-sm" th:field="*{request}" maxlength="200" placeholder="Pesquisar por Request"/>
+								</div>
+
+								<div class="col-sm-2" >
+									<label>Status</label> 
+									<input id="status" class="form-control input-sm" th:field="*{status}" maxlength="3" 
+										onBlur="validarStatus(status)" placeholder="Pesquisar por Status"/>
+								</div>
+
+								<div class="col-md-4" >
+									<label>User Agent</label>
+									<input id="user" class="form-control input-sm" th:field="*{userAgent}" maxlength="1000" placeholder="Pesquisar por User Agent"/>
+								</div>
+						</div>
+
+						<div class="panel-footer">
+							<input type="submit" value="Pesquisar" class="btn btn-sm btn-primary">
+							<a th:href="@{/limpar}" class="btn btn-sm btn-danger">
+                            	<i> Limpar</i>
+                            </a>
+                            <a class="btn btn-sm btn-success" th:href="@{/edit}" >
+								<i class="fa fa-user-plus ml-2"> Adicionar</i>
+							</a>
+						</div>
+					</div>
+				</form>
+				<div class="table-responsive">
+					<table class="table table-sm table-striped table-hover table-bordered" 
+						style="width: 98% !important; margin-left: 10px !important; margin-right: 10px !important;">
+						<thead>
+							<tr>
+								<th style="width: 15% !important; text-align: center !important;">Data</th>
+								<th style="width: 10% !important; text-align: center !important;">IP</th>
+								<th style="width: 20% !important; text-align: center !important;">Request</th>
+								<th style="width: 5% !important; text-align: center !important;">Status</th>
+								<th style="width: 20% !important; text-align: center !important;">User Agent</th>
+								<th style="width: 10% !important; text-align: center !important;">Editar</th>
+								<th style="width: 10% !important; text-align: center !important;">Deletar</th>
+							</tr>
+						</thead>
+						
+						<tbody>
+						
+							<tr th:each="log, iStat : ${logs.content}"
+            					th:style="${iStat.odd}? 'font-weight: bold;'"
+            					th:alt-title="${iStat.even}? 'even' : 'odd'">
+							
+								<td th:text="${#dates.format(log.data, 'yyyy/MM/dd HH:mm:ss.SSS')}"></td>
+								<td th:text="${log.ip}"></td>
+								<td th:text="${log.request}"></td>
+								<td style="text-align: center !important;" th:text="${log.status}"></td>
+								<td th:text="${log.userAgent}"></td>
+								
+								<td style="text-align: center !important;">
+							   		<a th:href="@{/edit/{id}(id=${log.seq})}" class="btn btn-sm btn-primary">
+                                       	<i class="fa fa-pencil-square-o ml-2"> Editar</i>
+                                   	</a>
+								</td>
+								<td style="text-align: center !important;">
+                                   	<a th:href="@{/delete/{id}(id=${log.seq})}" class="btn btn-sm btn-danger">
+                                       	<i class="fa fa-user-times ml-2"> Excluir</i>
+                                   	</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<nav aria-label="Pagination" th:if="${logs.totalPages gt 0}">
+					    <ul class="pagination justify-content-center font-weight-medium">
+					        <li class="page-item" th:classappend="${logs.number eq 0} ? 'disabled'">
+					            <a class="page-link svg-icon"
+					               th:href="@{/prevent?page={id}(id=${logs.number lt 2 ? 1 : logs.number})}"
+					               aria-label="Previous"
+					               title="Previous Page" rel="tooltip">
+					                <span aria-hidden="true" data-feather="chevrons-left" width="20" height="20"></span>
+					            </a>
+					        </li>
+					        <li class="page-item" th:classappend="${i eq logs.number + 1} ? 'active'"
+					            th:each="i : ${#numbers.sequence( logs.number + 1, logs.totalPages > 10 + logs.number ? logs.number + 10 : logs.totalPages, 1)}">
+					            <a class="page-link" th:href="@{/prevent?page={id}(id=${i})}" th:text="${i}"
+					               th:title="${'Page '+ i}"
+					               rel="tooltip"></a>
+					        </li>
+					        <li class="page-item disabled" th:if="${logs.number + 10 < logs.totalPages}">
+					            <a class="page-link svg-icon" href="#">
+					                <span data-feather="more-horizontal" width="20" height="20"></span>
+					            </a>
+					        </li>
+					        <li class="page-item" th:classappend="${logs.number + 1 eq logs.totalPages} ? 'disabled'">
+					            <a class="page-link svg-icon" th:href="@{/prevent?page={id}(id=${logs.number + 2})}"
+					               aria-label="Next"
+					               title="Next Page" rel="tooltip">
+					                <span aria-hidden="true" data-feather="chevrons-right" width="20" height="20"></span>
+					            </a>
+					        </li>
+					    </ul>
+					</nav>
+				</div>
+			</div>
+
+		</div>
+		
+		<script type="text/javascript">
+			function validarStatus(id){
+				var RegExPatter = /[^0-9]/;
+				if(id.value.match(RegExPatter)){
+					alert('Digite apenas numeros: ex: 200.');
+					id.value = "";
+				}
+			}
+			
+			function validaData(data){
+				var formatoValido = /^(0[1-9]|[12][0-9]|3[01])[/](0[1-9]|1[012])[/](19|20)\d\d$/;
+				
+				if(data.value != ""){
+					if(!formatoValido.test(data.value)){
+						data.value = "";
+						alert("A data está no formato errado ou Valores inválidos para o dia, mês ou ano. Por favor corrija.");
+					}
+				}	
+			}
+			
+			function checkData(){
+			    
+				if(document.getElementById("dataIni").value.length > 0 
+						&& document.getElementById("dataFim").value.length == 0){
+					alert('Preeencha Data Final.');
+					return false;
+				}
+				if(document.getElementById("dataIni").value.length == 0 
+						&& document.getElementById("dataFim").value.length > 0){
+					alert('Preeencha Data Inicio.');
+					return false;
+				}
+				if(document.getElementById("dataIni").value.length > 0 
+						&& document.getElementById("dataFim").value.length > 0){
+					
+					var data1 = document.getElementById("dataIni").value;
+					var data2 = document.getElementById("dataFim").value;
+
+					var partesData1 = data1.split("-");
+					var nova_data1 = new Date(partesData1[2], partesData1[1] - 1, partesData1[0]);
+					
+					var partesData2 = data2.split("-");
+					var nova_data2 = new Date(partesData2[2], partesData2[1] - 1, partesData2[0]);
+					 
+					if (nova_data2 < nova_data1){
+						alert('Data Final não pode ser menor que a Data Inicial.');
+						return false;
+					}	
+				}
+				return true;
+			}
+		</script>
+	</body>
+</html>
